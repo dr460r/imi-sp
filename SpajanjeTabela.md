@@ -41,6 +41,8 @@ WHERE games.dev_id = devs.dev_id
   AND games.year < 2019
 ```
 
+<div class="page"/>
+
 ### Alias
 
 Nazive rezultujućih kolona možemo promeniti
@@ -60,8 +62,8 @@ WHERE g.dev_id = d.dev_id
 ```
 
 Pojmovi:
-- _Equijoin_ - Spajanje, uz filter koji poredi kolone sa `=`
-- _Non-Equijoin_ - Spajanje, uz filter sa bilo kojim drugim načinom poređenja
+- _Equijoin_ - Spajanje pomoću filtera koji poredi jednakost kolona (`=`)
+- _Non-Equijoin_ - Spajanje pomoću bilo kog drugog filtera
 
 
 ## Inner Join
@@ -87,6 +89,8 @@ WHERE games.reviews > 99
   AND games.year < 2019
 ```
 
+<div class="page"/>
+
 ### Using
 
 U slučaju da se kolone kojima upoređujemo jednakost (_equijoin_) prilikm spajanja zovu isto, možemo koristiti `USING` ključnu reč:
@@ -107,7 +111,9 @@ SELECT *
 FROM games NATURAL JOIN devs
 ```
 
-### Spajanje 3 tabele
+### Spajanje više od dve tabele
+
+Spajanje se uvek izvršava za neke **dve** tabele. Kada se dve tabele spoje dobijemo jednu rezultujuću tabelu koju onda možemo spojiti sa **trećom**, što će opet dati novu rezultujuću tabelu koju onda možemo spojiti sa **četvrtom**, i tako dalje.
 
 ```sql
 SELECT *
@@ -120,15 +126,6 @@ FROM games
 
 Spajanje redova iz tabele sa redovima iz te iste tabele.
 
-Dekartov proizvod i filtriranje:
-
-```sql
-SELECT emp.last_name AS "Radnik", 
-       mng.last_name AS "Rukovodilac"
-FROM empleyees emp, empleyees mng
-WHERE emp.manager_id = mng.employee_id
-```
-
 _Inner join_ sa uslovom za spajanje:
 
 ```sql
@@ -138,6 +135,8 @@ FROM empleyees emp JOIN empleyees mng
 ON emp.manager_id = mng.employee_id
 ```
 
+<div class="page"/>
+
 ## Outer Join
 
 Ukoliko se na osnovu uslova spajanja za neki red ne pronađe odgovarajući par u drugoj tabeli on može biti uključen u finalnu tabelu. U tom slučaju umesto vrednosti reda iz druge tabele (pošto nije pronađen) će se naći `NULL`.
@@ -145,24 +144,81 @@ Ukoliko se na osnovu uslova spajanja za neki red ne pronađe odgovarajući par u
 ### Left Outer Join
 **`LEFT JOIN` / `LEFT OUTER JOIN`**
 
-Svi redovi **leve** tabele će biti uključeni u rezultat. Oni koji nemaju odgovarajući red iz desne tabele
+Svi redovi **leve** tabele će biti uključeni u rezultat. Oni koji nemaju odgovarajući red iz **desne** tabele će za vrednosti kolona iz te tabele imati `NULL`.
 
 ```sql
+SELECT w.name, m.name
+FROM workers w LEFT JOIN managers m
+ON w.manager_id = m.id
 ```
+
+worker | manager
+-------|--------
+Pera   | Žika
+Mika   | Žika
+Laza   | **-**
+
+### Right Outer Join
+**`RIGHT JOIN` / `RIGHT OUTER JOIN`**
+
+Svi redovi **desne** tabele će biti uključeni u rezultat. Oni koji nemaju odgovarajući red iz **leve** tabele će za vrednosti kolona iz te tabele imati `NULL`.
+
+```sql
+SELECT w.name, m.name
+FROM workers w RIGHT JOIN managers m
+ON w.manager_id = m.id
+```
+
+worker | manager
+-------|--------
+Pera   | Žika
+Mika   | Žika
+**-**  | Raja
+
+<div class="page"/>
 
 ### Full Outer Join
 **`FULL JOIN` / `FULL OUTER JOIN`**
 
+Svi redovi **obe** tabele će biti uključeni u rezultat. Oni koji nemaju odgovarajući red iz **druge** tabele će za vrednosti kolona iz te tabele imati `NULL`.
 
 ```sql
-
+SELECT w.name, m.name
+FROM workers w FULL JOIN managers m
+ON w.manager_id = m.id
 ```
 
+worker | manager
+-------|--------
+Pera   | Žika
+Mika   | Žika
+Laza   | **-**
+**-**  | Raja
 
 
-- RIGHT/LEFT/FULL (OUTER) JOIN + ON
-- Old Oracle Syntax (+)
+### Oracle Syntax (+)
+
+Starija Oracle-ova sintaksa za outer join nam omogućava da preko filtriranja dekartovog proizvoda efektivno odradimo **left/right outer join**.
 
 
+_Left Outer Join_:
+
+```sql
+SELECT w.name, m.name
+FROM workers w, managers m
+WHERE w.manager_id(+) = m.id
+```
+
+_Right Outer Join_:
+
+```sql
+SELECT w.name, m.name
+FROM workers w, managers m
+WHERE w.manager_id = m.id(+)
+```
+
+Umesto da filtriranjem samo izbaci redove koji ne odgovaraju uslovu, određene redove će zadržati (u zavisnosti da li je **left** ili **right** join) ali će ih modifikovati tako da u odgovarajućim kolonama imaju `NULL`.
+
+<div class="page"/>
 
 # Hijerarhijski upiti ???
