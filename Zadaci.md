@@ -82,17 +82,6 @@ FROM employees e LEFT JOIN employees m
   ON e.manager_id = m.employee_id
 ```
 
-_Hijerarhijski upit_
-
-```sql
-SELECT employee_id, first_name, last_name, 
-       PRIOR employee_id, PRIOR first_name, PRIOR last_name
-FROM employees
-START WITH manager_id is NULL
-CONNECT BY manager_id = PRIOR employee_id
-```
-
-
 ### 6. Креирати упит којим се приказује ИД менаџера, ИД одсека, одсек, име и презиме свих запослених који раде у одсецима 80, 90, 110 и 190 (табеле employees и departments).
 
 _Dekartov proizvod + Filter_
