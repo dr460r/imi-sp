@@ -251,6 +251,8 @@ ON emp.manager_id = mng.id
 | Laza reports to Žika |
 | Žika reports to |
 
+<div class="page"/>
+
 ### Hijerarhijski pristup
 
 Spajamo svaki red iz tabele sa drugim redom iz iste tabele koji odgovara uslovu u `CONNECT BY`. Sa `PRIOR` označavamo kolonu tog "drugog reda" umesto da koristimo naziv tabele i preimenovanje (`employees mng`).
